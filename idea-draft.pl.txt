@@ -1,0 +1,17 @@
+python + dbus + gconf
+
+daemon systemowy + konfiguracja
+
+możliwość nadpisania części konfiguracja per user (gconf)
+
+opcjonalne włączanie/wyłączanie przez acpi_call
+
+//jeśli ktoś zmienił konfiguracje od ktorej zalezy X, wylaczay jego serwer X (o ile nie uzywany) i jak uzyje jeszce raz to sie wlaczy
+serwer X jest system wide, konfiguracja VGLa per user
+
+optirun bierze ustawienia z daemona + gconf
+
+
+use gnome = gconf
+kde = kconf
+flat = ~/.bumblepyy
