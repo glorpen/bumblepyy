@@ -16,7 +16,8 @@ import os
 from bumblepyy.config import Config
 
 def run():
-    config = Config('bumblepyy.conf')
+    #FIXME, load from daemon
+    config = Config('/etc/bumblepyy.conf')
     
     env = dict(os.environ)
     env["LD_LIBRARY_PATH"] = config.system.library_path
