@@ -4,21 +4,15 @@ Created on 21-08-2011
 @author: arkus
 '''
 
-import gobject
+
 from subprocess import Popen
 import subprocess
 import threading
 import os
 import signal
-from bumblepyy.config import Config
-gobject.threads_init()
-
-from dbus import glib
-glib.init_threads()
-
-import dbus
 import dbus.service
-import dbus.mainloop.glib
+
+from bumblepyy.config import Config
 
 class XorgServer(object):
     def __init__(self, config):
@@ -84,8 +78,8 @@ class XorgServer(object):
         return self._thread != None
     
 class BumblePyyService(dbus.service.Object):
-    def __init__(self):
-        self.config = Config(os.path.join(os.path.dirname(__file__),'bumblepyy.conf'))
+    def __init__(self, config_path):
+        self.config = Config(config_path)
         
         self.xorg_server = XorgServer(self.config)
         
@@ -115,12 +109,3 @@ class BumblePyyService(dbus.service.Object):
             raise RuntimeError("server canot be stopped")
         
         return True
-
-if __name__ == '__main__':
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-
-    object = BumblePyyService()
-
-    mainloop = gobject.MainLoop()
-    print "BumblePyy service registered"
-    mainloop.run()

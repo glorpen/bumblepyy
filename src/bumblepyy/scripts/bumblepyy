@@ -1,0 +1,27 @@
+#!python
+
+'''
+Created on 23-08-2011
+
+@author: arkus
+'''
+
+import gobject
+gobject.threads_init()
+
+from dbus import glib
+glib.init_threads()
+
+import dbus
+import dbus.mainloop.glib
+
+from bumblepyy.service import BumblePyyService
+
+if __name__ == '__main__':
+
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+    object = BumblePyyService("/etc/bumblepyy.conf")
+
+    mainloop = gobject.MainLoop()
+    mainloop.run()

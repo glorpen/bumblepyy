@@ -18,6 +18,7 @@ setup(name='BumblePyy',
       data_files=[
         ('/etc/dbus-1/system.d', ['bumblepyy/dbus/org.bumblepyy.conf']),
         ('/etc', ['bumblepyy/bumblepyy.conf'])
-    ],
+      ],
+      scripts=['bumblepyy/scripts/bumblepyy', 'bumblepyy/scripts/optirun'],
 )
 
