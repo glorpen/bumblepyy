@@ -10,6 +10,7 @@ import subprocess
 import threading
 import os
 import signal
+from bumblepyy.config import Config
 gobject.threads_init()
 
 from dbus import glib
@@ -18,19 +19,19 @@ glib.init_threads()
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-import ConfigParser
 
 class XorgServer(object):
     def __init__(self, config):
-        self.args = ":%d -config %s -sharevts -nolisten tcp -noreset -configdir /dev/null %s" % (
-            config.getint("service", "x_display"),
-            config.get("service", "x_config"),
-            config.get("service", "x_args")
+        self.args = ":%s -config %s -sharevts -nolisten tcp -noreset -configdir /dev/null %s" % (
+            config.x_display,
+            config.x_config,
+            config.system.x_args
         )
+        
         self._thread = None
         self._proc = None
         
-        self._library_path = config.get("service", "library_path")
+        self._library_path = config.system.library_path
         
         print "Xorg server initiated"
     
@@ -77,15 +78,14 @@ class XorgServer(object):
         print "restarting"
         if self.running:
             self.stop()
-        self.start()
+        return self.start()
         
     def running(self):
         return self._thread != None
     
 class BumblePyyService(dbus.service.Object):
     def __init__(self):
-        self.config = ConfigParser.ConfigParser()
-        self.config.read('bumblepyy.conf')
+        self.config = Config(os.path.join(os.path.dirname(__file__),'bumblepyy.conf'))
         
         self.xorg_server = XorgServer(self.config)
         
@@ -97,7 +97,7 @@ class BumblePyyService(dbus.service.Object):
     @dbus.service.method(dbus_interface='org.bumblepyy', in_signature='', out_signature='b')
     def prepareXorg(self):
         '''
-        Returns True if X server is ready, False otherwise. Will block until is started.
+        Returns True if X server is ready, False otherwise. Will block until started.
         '''
         
         if not self.xorg_server.running():

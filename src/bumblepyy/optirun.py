@@ -12,23 +12,21 @@ import ConfigParser
 import subprocess
 from subprocess import Popen
 import os
+from bumblepyy.config import Config
 
 def run():
-    config = ConfigParser.ConfigParser()
-    config.read('bumblepyy.conf')
+    config = Config('bumblepyy.conf')
     
     env = dict(os.environ)
-    env["LD_LIBRARY_PATH"] = config.get("service", "library_path")
+    env["LD_LIBRARY_PATH"] = config.system.library_path
     #[[ $VGL_COMPRESS =~ ^jpeg|rgb|yuv$ ]] && vglclient -detach &>/dev/null
     proc = Popen([
         "vglrun",
-        "-c", config.get("optirun", "vgl_compress"),
-        "-d", ":"+config.get("service", "x_display"),
-        "-ld", config.get("service", "library_path"),
+        "-c", config.optirun.vgl_compress,
+        "-d", ":"+config.x_display,
+        "-ld", config.system.library_path,
         "--" 
     ]+sys.argv[1:], shell=False, stderr=subprocess.PIPE, env=env)
-    
-    os.environ
     
     for line in proc.stderr:
         print line
@@ -42,8 +40,10 @@ def main():
         remote_object = bus.get_object("org.bumblepyy", "/BumblePyy")
         iface = dbus.Interface(remote_object, "org.bumblepyy")
         
-        print repr(iface.prepareXorg())
-        run()
+        if iface.prepareXorg():
+            run()
+        else:
+            print "Xorg server not ready"
         
         #print repr(iface.__getattr__(m)())
 
