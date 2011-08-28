@@ -6,12 +6,7 @@ Created on 23-08-2011
 @author: arkus
 '''
 
-import argparse, os, sys
-
-cmd_folder = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if cmd_folder not in sys.path:
-    sys.path.insert(0, cmd_folder)
-
+import argparse, os
 
 from bumblepyy.service import BumblePyyService
 
