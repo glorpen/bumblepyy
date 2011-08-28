@@ -6,22 +6,49 @@ Created on 23-08-2011
 @author: arkus
 '''
 
-import gobject
-gobject.threads_init()
+import argparse, os, sys
 
-from dbus import glib
-glib.init_threads()
+cmd_folder = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
 
-import dbus
-import dbus.mainloop.glib
 
 from bumblepyy.service import BumblePyyService
 
+def run(args):
+    object = BumblePyyService(args.config)
+    object.run()
+
+
+class PidContext():
+    def __init__(self, path):
+        self.path = path
+    def __enter__(self):
+        with open(self.path, "w") as f:
+            f.write(str(os.getpid()))
+    def __exit__(self, *_exc):
+        os.unlink(self.path)
+        
+
 if __name__ == '__main__':
 
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    parser = argparse.ArgumentParser(description="Run Bumblepyy service")
+    parser.add_argument("--config", "-c", type=str, help="Config file to use", default="/etc/bumblepyy.conf")
+    parser.add_argument("--pid_file", "-p", type=str, help="Pid file to use", default="/var/run/bumblepyy.pid")
+    parser.add_argument("--background", "-b", help="Run service in background", default=False, action="store_true")
 
-    object = BumblePyyService("/etc/bumblepyy.conf")
+    args=parser.parse_args()
+    if args.background:
+        import daemon
 
-    mainloop = gobject.MainLoop()
-    mainloop.run()
+        context = daemon.DaemonContext(
+            pidfile=PidContext(args.pid_file),
+            #stdout = sys.stdout,
+            #stderr = sys.stderr
+        )
+        with context:
+            run(args)
+    else:
+        run(args)
+
+

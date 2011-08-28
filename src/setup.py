@@ -13,7 +13,7 @@ setup(name='BumblePyy',
       packages=['bumblepyy'],
       provides="bumblepyy",
       requires=[
-        "configobj"
+        "configobj", "python-daemon"
       ],
       data_files=[
         ('/etc/dbus-1/system.d', ['bumblepyy/dbus/org.bumblepyy.conf']),
