@@ -146,6 +146,7 @@ class BumblePyyService(dbus.service.Object):
         self.mainloop = gobject.MainLoop()
         
         signal.signal(signal.SIGINT, self.shutdown)
+        signal.signal(signal.SIGTERM, self.shutdown)
         
     def run(self):
         log(syslog.LOG_INFO, "running")
